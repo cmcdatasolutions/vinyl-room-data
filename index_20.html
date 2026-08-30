@@ -1,0 +1,723 @@
+<title>The Vinyl Room</title>
+<style>
+  :root{--bg:#05070a;--panel:#0c1118;--panel2:#101720;--border:#22303f;--border-bright:#3c5468;
+  --text:#cddced;--text-dim:#7d90a3;--green:#3dffa5;--green-dim:#187a52;--cyan:#28d9f0;--amber:#fbbf3f;--red:#ff6b6b;
+  --mono:'JetBrains Mono','Roboto Mono',ui-monospace,'Courier New',monospace;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--mono);}
+  body{min-height:100vh;background-image:radial-gradient(circle at 15% 10%,rgba(61,255,165,.05),transparent 40%),
+  radial-gradient(circle at 85% 90%,rgba(40,217,240,.05),transparent 40%),
+  repeating-linear-gradient(180deg,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 3px);}
+  #root{max-width:920px;margin:0 auto;padding:28px 20px 80px;}
+  a{color:var(--cyan);}
+  .hdr{display:flex;align-items:center;gap:16px;border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:18px;}
+  .logo{width:54px;height:54px;flex:none;color:var(--green);filter:drop-shadow(0 0 6px rgba(61,255,165,.5));animation:spin 14s linear infinite;}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .title-block{flex:1;min-width:0;}
+  .title{font-size:26px;font-weight:700;letter-spacing:2px;color:var(--text);margin:0;}
+  .title .blink{color:var(--green);animation:blink 1.1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0}}
+  .subtitle{font-size:11px;letter-spacing:3px;color:var(--text-dim);margin-top:4px;text-transform:uppercase;}
+  .status-line{font-size:11px;color:var(--text-dim);letter-spacing:1px;margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .tabs{display:flex;gap:2px;margin-bottom:20px;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  .tab{flex:1;text-align:center;padding:11px 10px;background:var(--panel);color:var(--text-dim);cursor:pointer;font-size:12px;letter-spacing:1.5px;user-select:none;border-right:1px solid var(--border);}
+  .tab:last-child{border-right:none;}
+  .tab.active{background:var(--panel2);color:var(--green);box-shadow:inset 0 -2px 0 var(--green);}
+  .tab:hover:not(.active){color:var(--text);}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:22px;}
+  .section-label{font-size:11px;letter-spacing:2px;color:var(--cyan);margin:0 0 14px;text-transform:uppercase;border-left:3px solid var(--cyan);padding-left:8px;}
+  .section-label.alt{color:var(--green);border-color:var(--green);}
+  .field{margin-bottom:22px;}
+  .label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:8px;letter-spacing:.5px;}
+  select,textarea{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;border-radius:5px;}
+  select:focus,textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 2px rgba(61,255,165,.15);}
+  textarea{min-height:100px;resize:vertical;line-height:1.5;}
+  textarea.copybox{font-size:11px;line-height:1.5;color:var(--cyan);background:#0a1016;cursor:text;}
+  .q-block{border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:12px;background:var(--panel2);}
+  .q-text{font-size:13px;color:var(--text);margin-bottom:10px;}
+  .q-num{color:var(--green);margin-right:6px;}
+  .opt{display:flex;align-items:flex-start;gap:9px;padding:6px 4px;border-radius:4px;cursor:pointer;font-size:12.5px;color:var(--text-dim);}
+  .opt:hover{color:var(--text);background:rgba(255,255,255,.02);}
+  .opt input{accent-color:var(--green);margin-top:2px;}
+  .opt.checked{color:var(--green);}
+  .comfort-row{display:flex;flex-direction:column;gap:6px;}
+  button.btn{font-family:var(--mono);font-size:13px;letter-spacing:1.5px;padding:12px 18px;border-radius:6px;cursor:pointer;border:1px solid var(--green);background:rgba(61,255,165,.08);color:var(--green);}
+  button.btn:hover{background:rgba(61,255,165,.18);}
+  button.btn:disabled{opacity:.4;cursor:not-allowed;}
+  button.btn.secondary{border-color:var(--border-bright);background:transparent;color:var(--text-dim);}
+  button.btn.secondary:hover{color:var(--text);}
+  .banner{padding:10px 14px;border-radius:6px;font-size:12px;margin-bottom:16px;border:1px solid;}
+  .banner.info{border-color:var(--cyan);color:var(--cyan);background:rgba(40,217,240,.07);}
+  .banner.warn{border-color:var(--amber);color:var(--amber);background:rgba(251,191,63,.07);}
+  .banner.error{border-color:var(--red);color:var(--red);background:rgba(255,107,107,.07);}
+  .notice{border:1px dashed var(--border-bright);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--text-dim);margin-bottom:18px;line-height:1.6;}
+  .notice b{color:var(--text);}
+  .stats-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:12px;color:var(--text-dim);}
+  .progress-track{flex:1;height:6px;background:var(--panel2);border:1px solid var(--border);border-radius:3px;margin:0 14px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th{text-align:left;color:var(--text-dim);font-weight:400;letter-spacing:1px;font-size:10.5px;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--border-bright);}
+  td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr.pending td{color:var(--text-dim);opacity:.55;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;letter-spacing:1px;border:1px solid;}
+  .badge-beginner{color:var(--amber);border-color:var(--amber);}
+  .badge-intermediate{color:var(--cyan);border-color:var(--cyan);}
+  .badge-advanced{color:var(--green);border-color:var(--green);}
+  .badge-pending{color:var(--text-dim);border-color:var(--border-bright);}
+  .goals-cell{max-width:260px;}
+  .goals-full{white-space:pre-wrap;color:var(--text);}
+  .link-btn{background:none;border:none;color:var(--cyan);font-family:var(--mono);font-size:11px;cursor:pointer;padding:0;text-decoration:underline;}
+  .toolbar{display:flex;justify-content:flex-end;margin-bottom:14px;}
+  .footer-note{margin-top:22px;font-size:10.5px;color:var(--text-dim);letter-spacing:.5px;text-align:center;}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
+<div id="root"><div style="padding:40px;opacity:.6">INITIALIZING THE VINYL ROOM…</div></div>
+<script id="vinyl-data" type="application/json">[]</script>
+<script id="vinyl-app">
+(function () {
+  'use strict';
+
+  /* ======================== SYNC ENDPOINTS ======================== */
+  // Worker that writes an entry to the GitHub-hosted CSV (holds the token privately).
+  var SYNC_URL = "https://vinyl-room-sync.fancy-waterfall-2c01.workers.dev";
+  // The CSV lives next to this page in the same repo — same-origin fetch, no CORS needed.
+  var CSV_URL = "vinyl-room-table.csv";
+
+  // Portal-owner unlock for the full Track Log. This is a UI-level gate, not
+  // real server-side security — the passphrase is checked by comparing a
+  // SHA-256 hash so it isn't sitting in the page as plain text, but the raw
+  // table file is still reachable directly by anyone who goes looking for it
+  // (e.g. the GitHub repo itself, or this page's network requests). It's
+  // meant to stop casual browsing of teammates' scores through the portal
+  // UI, not to withstand a determined technical user.
+  var ADMIN_HASH = "9233b948821b39da2e52a0d9453cb2f89e794b6a51f50b8c6c7c8705c3892b94"; // default passphrase: vinylroom2026
+
+  function sha256Hex(text) {
+    var bytes = new TextEncoder().encode(text);
+    return crypto.subtle.digest("SHA-256", bytes).then(function (buf) {
+      var arr = Array.from(new Uint8Array(buf));
+      return arr.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    });
+  }
+
+  /* ======================== DATA: ROSTER ======================== */
+  var NAMES = [
+    "Ian (MOKI)", "Dwight", "Adrian", "Yvette", "Delly",
+    "Lee", "Camille", "Angella", "Rockell", "Rohan", "Dave"
+  ];
+
+  /* ======================== DATA: DIAGNOSTIC QUESTIONS ======================== */
+  var QUESTIONS = [
+    {
+      q: "What does LLM stand for?",
+      options: ["Large Language Model", "Linear Logic Machine", "Long-form Learning Method", "Local Language Module"],
+      correct: 0
+    },
+    {
+      q: "Which of these is an example of a generative AI tool?",
+      options: ["A basic calculator", "A spreadsheet SUM formula", "ChatGPT or Claude", "A barcode scanner"],
+      correct: 2
+    },
+    {
+      q: "What is a prompt, in the context of AI tools?",
+      options: [
+        "An error message the AI shows you",
+        "The instructions or question you give an AI to get a response",
+        "A plugin that speeds up an AI model",
+        "A type of AI processor chip"
+      ],
+      correct: 1
+    },
+    {
+      q: "AI chatbots sometimes state incorrect information very confidently. This is commonly called:",
+      options: ["Encryption", "Overfitting", "A firmware error", "Hallucination"],
+      correct: 3
+    },
+    {
+      q: "Which task is AI generally well-suited to help with today?",
+      options: [
+        "Guaranteeing 100% factual accuracy on any topic",
+        "Drafting an email or summarizing a long document",
+        "Reading a persons mind",
+        "Replacing all human judgment with zero oversight"
+      ],
+      correct: 1
+    },
+    {
+      q: "What is an important practice when using AI for work tasks?",
+      options: [
+        "Never checking or verifying its output",
+        "Sharing passwords or confidential data with it for convenience",
+        "Reviewing and verifying AI-generated output before using it",
+        "Assuming it always has the latest news"
+      ],
+      correct: 2
+    },
+    {
+      q: "What does training data mean for an AI model?",
+      options: [
+        "The users saved login credentials",
+        "A spreadsheet file format",
+        "The data used to teach the model patterns before it is released",
+        "The AI internal clock and calendar settings"
+      ],
+      correct: 2
+    },
+    {
+      q: "Which best describes an AI agent in a work context?",
+      options: [
+        "A physical robot that walks around the office",
+        "Software that can take multi-step actions with some autonomy, like researching or drafting content",
+        "A person whose job is answering emails",
+        "A firewall configuration setting"
+      ],
+      correct: 1
+    }
+  ];
+
+  var COMFORT_LABELS = [
+    "1 — Never used AI tools",
+    "2 — Tried it a few times",
+    "3 — Use it occasionally for simple tasks",
+    "4 — Use it regularly and comfortably",
+    "5 — Use it daily / very comfortable"
+  ];
+
+  /* ======================== STATE ======================== */
+  var DATA = [];
+  try {
+    DATA = JSON.parse(document.getElementById("vinyl-data").textContent || "[]");
+  } catch (e) { DATA = []; }
+
+  var state = {
+    view: "form",
+    name: "",
+    answers: {},
+    comfort: null,
+    goals: "",
+    expanded: {},
+    exportText: null,
+    csvText: null,
+    banner: null,
+    busy: false,
+    saved: false,
+    isAdmin: false,
+    adminInput: "",
+    adminError: false,
+    adminGateOpen: false
+  };
+
+  /* ======================== HELPERS ======================== */
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function scoreOf(ans) {
+    var s = 0;
+    QUESTIONS.forEach(function (q, i) { if (ans[i] === q.correct) s++; });
+    return s;
+  }
+
+  function levelOf(score) {
+    if (score <= 2) return "BEGINNER";
+    if (score <= 5) return "INTERMEDIATE";
+    return "ADVANCED";
+  }
+
+  function levelClass(level) {
+    if (level === "BEGINNER") return "badge-beginner";
+    if (level === "INTERMEDIATE") return "badge-intermediate";
+    if (level === "ADVANCED") return "badge-advanced";
+    return "badge-pending";
+  }
+
+  function entryFor(name) {
+    for (var i = 0; i < DATA.length; i++) if (DATA[i].name === name) return DATA[i];
+    return null;
+  }
+
+  function fmtDate(iso) {
+    try {
+      var d = new Date(iso);
+      return d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    } catch (e) { return iso; }
+  }
+
+  function setBanner(kind, msg) { state.banner = { kind: kind, msg: msg }; render(); }
+  function clearBanner() { state.banner = null; }
+
+  /* ======================== RENDER ======================== */
+  function render() {
+    var root = document.getElementById("root");
+    var html = "";
+
+    html += "<div class=\"hdr\">";
+    html += recordLogoSvg();
+    html += "<div class=\"title-block\">";
+    html += "<div class=\"title\">THE VINYL ROOM<span class=\"blink\">_</span></div>";
+    html += "<div class=\"subtitle\">AI Readiness Terminal // Track Intake System</div>";
+    html += "<div class=\"status-line\"><span class=\"dot\"></span>STATUS: LOG SNAPSHOT" +
+      "&nbsp;&nbsp;//&nbsp;&nbsp;" + DATA.length + " / " + NAMES.length + " OPERATORS LOGGED</div>";
+    html += "</div></div>";
+
+    if (state.banner) {
+      html += "<div class=\"banner " + state.banner.kind + "\">" + esc(state.banner.msg) + "</div>";
+    }
+
+    html += "<div class=\"tabs\">";
+    html += "<div class=\"tab" + (state.view === "form" ? " active" : "") + "\" data-action=\"tab\" data-tab=\"form\">NEW_ENTRY.exe</div>";
+    html += "<div class=\"tab" + (state.view === "log" ? " active" : "") + "\" data-action=\"tab\" data-tab=\"log\">TRACK_LOG.db</div>";
+    html += "</div>";
+
+    html += "<div class=\"panel\">";
+    html += state.view === "form" ? renderForm() : renderLog();
+    html += "</div>";
+
+    html += "<div class=\"footer-note\">THE VINYL ROOM // internal AI-readiness intake // this table is a periodic snapshot, updated by the portal owner</div>";
+
+    root.innerHTML = html;
+    attachEvents();
+  }
+
+  function recordLogoSvg() {
+    return "<svg class=\"logo\" viewBox=\"0 0 100 100\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">" +
+      "<circle cx=\"50\" cy=\"50\" r=\"46\" stroke=\"currentColor\" stroke-width=\"2\" opacity=\"0.5\"/>" +
+      "<circle cx=\"50\" cy=\"50\" r=\"35\" stroke=\"currentColor\" stroke-width=\"1.5\" opacity=\"0.35\"/>" +
+      "<circle cx=\"50\" cy=\"50\" r=\"24\" stroke=\"currentColor\" stroke-width=\"1.5\" opacity=\"0.25\"/>" +
+      "<circle cx=\"50\" cy=\"50\" r=\"13\" stroke=\"currentColor\" stroke-width=\"1.5\" opacity=\"0.2\"/>" +
+      "<circle cx=\"50\" cy=\"50\" r=\"5\" fill=\"currentColor\"/>" +
+      "</svg>";
+  }
+
+  function renderForm() {
+    var h = "";
+    h += "<div class=\"notice\"><b>How this works:</b> fill this out, then hit COMMIT ENTRY — your answers save straight to the shared log. If that ever fails (offline, etc.), your answers are copied to your clipboard instead so you can send them to the portal owner directly.</div>";
+    h += "<p class=\"section-label\">Select Operator</p>";
+    h += "<div class=\"field\"><select id=\"f-name\" data-action=\"name\">";
+    h += "<option value=\"\">— choose your name —</option>";
+    NAMES.forEach(function (n) {
+      var done = entryFor(n) ? " (logged)" : "";
+      h += "<option value=\"" + esc(n) + "\"" + (state.name === n ? " selected" : "") + ">" + esc(n) + done + "</option>";
+    });
+    h += "</select></div>";
+
+    if (state.name) {
+      h += "<p class=\"section-label\">AI System Diagnostic</p>";
+      h += "<p class=\"label\">8 quick questions to gauge your current familiarity with AI. There is no wrong starting point — answer honestly.</p>";
+
+      QUESTIONS.forEach(function (q, qi) {
+        h += "<div class=\"q-block\">";
+        h += "<div class=\"q-text\"><span class=\"q-num\">Q" + (qi + 1) + "//</span>" + esc(q.q) + "</div>";
+        q.options.forEach(function (opt, oi) {
+          var checked = state.answers[qi] === oi;
+          h += "<label class=\"opt" + (checked ? " checked" : "") + "\">";
+          h += "<input type=\"radio\" name=\"q" + qi + "\" data-action=\"answer\" data-qi=\"" + qi + "\" data-oi=\"" + oi + "\"" + (checked ? " checked" : "") + ">";
+          h += "<span>" + esc(opt) + "</span></label>";
+        });
+        h += "</div>";
+      });
+
+      h += "<p class=\"section-label alt\">Self-Rated Comfort</p>";
+      h += "<div class=\"field q-block\"><div class=\"comfort-row\">";
+      COMFORT_LABELS.forEach(function (label, i) {
+        var val = i + 1;
+        var checked = state.comfort === val;
+        h += "<label class=\"opt" + (checked ? " checked" : "") + "\">";
+        h += "<input type=\"radio\" name=\"comfort\" data-action=\"comfort\" data-val=\"" + val + "\"" + (checked ? " checked" : "") + ">";
+        h += "<span>" + esc(label) + "</span></label>";
+      });
+      h += "</div></div>";
+
+      h += "<p class=\"section-label alt\">Request Log</p>";
+      h += "<div class=\"field\">";
+      h += "<label class=\"label\">What would you like to use AI to help you with?</label>";
+      h += "<textarea id=\"f-goals\" data-action=\"goals\" placeholder=\"e.g. drafting client emails, summarizing reports, brainstorming ideas...\">" + esc(state.goals) + "</textarea>";
+      h += "</div>";
+
+      h += "<button class=\"btn\" data-action=\"submit\"" + (state.busy ? " disabled" : "") + ">" +
+        (state.busy ? "SYNCING…" : "COMMIT ENTRY ▸") + "</button>";
+
+      if (state.saved) {
+        h += "<div class=\"q-block\" style=\"margin-top:14px;border-color:var(--green)\">";
+        h += "<div class=\"q-text\">Saved — you're in the shared log. Check the TRACK_LOG.db tab.</div>";
+        h += "</div>";
+      }
+
+      if (state.exportText) {
+        h += "<div class=\"q-block\" style=\"margin-top:14px;border-color:var(--cyan)\">";
+        h += "<div class=\"q-text\">Copy the block below and send it to the portal owner to get added to the shared log.</div>";
+        h += "<textarea class=\"copybox\" readonly rows=\"8\" onclick=\"this.select()\">" + esc(state.exportText) + "</textarea>";
+        h += "<button class=\"btn secondary\" data-action=\"copy-entry\" style=\"margin-top:10px\">COPY TO CLIPBOARD ▾</button>";
+        h += "</div>";
+      }
+    }
+
+    return h;
+  }
+
+  function renderLog() {
+    var h = "";
+    h += state.isAdmin ? renderFullLog() : renderOwnEntry();
+    h += renderAdminGate();
+    return h;
+  }
+
+  function renderOwnEntry() {
+    var h = "";
+    h += "<div class=\"notice\">For privacy, this tab only shows <b>your own</b> entry once you select your name on NEW_ENTRY.exe. Nobody else's scores are shown here.</div>";
+
+    if (!state.name) {
+      h += "<div class=\"q-block\"><div class=\"q-text\">Go to <b>NEW_ENTRY.exe</b> and select your name to view your entry here.</div></div>";
+      return h;
+    }
+
+    var e = entryFor(state.name);
+    h += "<p class=\"section-label\">" + esc(state.name) + "'s Entry</p>";
+    if (!e) {
+      h += "<div class=\"q-block\"><div class=\"q-text\">You haven't logged an entry yet. Head to <b>NEW_ENTRY.exe</b> to submit one.</div></div>";
+      return h;
+    }
+
+    h += "<table><tbody>";
+    h += "<tr><th>Logged</th><td>" + esc(fmtDate(e.timestamp)) + "</td></tr>";
+    h += "<tr><th>Level</th><td><span class=\"badge " + levelClass(e.level) + "\">" + esc(e.level) + " (" + e.score + "/8)</span></td></tr>";
+    h += "<tr><th>Comfort</th><td>" + esc(e.comfort) + "/5</td></tr>";
+    h += "<tr><th>Wants AI For</th><td class=\"goals-full\">" + esc(e.goals) + "</td></tr>";
+    h += "</tbody></table>";
+    return h;
+  }
+
+  function renderFullLog() {
+    var pct = Math.round((DATA.length / NAMES.length) * 100);
+    var h = "";
+    h += "<div class=\"notice\"><b>Admin view unlocked</b> — you're seeing every operator's entry. Everyone else only sees their own.</div>";
+    h += "<div class=\"toolbar\"><button class=\"btn secondary\" data-action=\"export\">COPY TABLE AS CSV ▾</button></div>";
+    if (state.csvText) {
+      h += "<div class=\"q-block\" style=\"border-color:var(--cyan)\">";
+      h += "<textarea class=\"copybox\" readonly rows=\"6\" onclick=\"this.select()\">" + esc(state.csvText) + "</textarea>";
+      h += "<button class=\"btn secondary\" data-action=\"copy-csv\" style=\"margin-top:10px\">COPY TO CLIPBOARD ▾</button>";
+      h += "</div>";
+    }
+    h += "<div class=\"stats-row\"><span>" + DATA.length + " / " + NAMES.length + " LOGGED</span>";
+    h += "<div class=\"progress-track\"><div class=\"progress-fill\" style=\"width:" + pct + "%\"></div></div>";
+    h += "<span>" + pct + "%</span></div>";
+
+    h += "<table><thead><tr><th>Operator</th><th>Logged</th><th>Level</th><th>Comfort</th><th>Wants AI For</th></tr></thead><tbody>";
+    NAMES.forEach(function (name) {
+      var e = entryFor(name);
+      if (!e) {
+        h += "<tr class=\"pending\"><td>" + esc(name) + "</td><td>—</td><td><span class=\"badge badge-pending\">PENDING</span></td><td>—</td><td>—</td></tr>";
+        return;
+      }
+      var isOpen = !!state.expanded[name];
+      var goalsShort = e.goals.length > 70 ? e.goals.slice(0, 70) + "…" : e.goals;
+      h += "<tr>";
+      h += "<td>" + esc(e.name) + "</td>";
+      h += "<td>" + esc(fmtDate(e.timestamp)) + "</td>";
+      h += "<td><span class=\"badge " + levelClass(e.level) + "\">" + esc(e.level) + " (" + e.score + "/8)</span></td>";
+      h += "<td>" + esc(e.comfort) + "/5</td>";
+      h += "<td class=\"goals-cell\">";
+      if (isOpen) {
+        h += "<div class=\"goals-full\">" + esc(e.goals) + "</div>";
+        h += "<button class=\"link-btn\" data-action=\"toggle\" data-name=\"" + esc(name) + "\">collapse</button>";
+      } else {
+        h += esc(goalsShort);
+        if (e.goals.length > 70) h += " <button class=\"link-btn\" data-action=\"toggle\" data-name=\"" + esc(name) + "\">expand</button>";
+      }
+      h += "</td></tr>";
+    });
+    h += "</tbody></table>";
+    return h;
+  }
+
+  function renderAdminGate() {
+    var h = "";
+    if (state.isAdmin) {
+      h += "<div class=\"stats-row\" style=\"margin-top:18px;border-top:1px dashed var(--border);padding-top:14px\">";
+      h += "<span></span><button class=\"link-btn\" data-action=\"admin-lock\">lock full log</button>";
+      h += "</div>";
+      return h;
+    }
+    h += "<div style=\"margin-top:22px;border-top:1px dashed var(--border);padding-top:14px\">";
+    if (!state.adminGateOpen) {
+      h += "<button class=\"link-btn\" data-action=\"admin-gate-open\">Portal owner? Unlock full log</button>";
+    } else {
+      h += "<div class=\"label\">Admin passphrase</div>";
+      h += "<div style=\"display:flex;gap:8px;flex-wrap:wrap\">";
+      h += "<input type=\"password\" id=\"f-admin\" style=\"flex:1;min-width:160px;background:var(--panel2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:13px;padding:9px 12px;border-radius:5px\" value=\"" + esc(state.adminInput) + "\">";
+      h += "<button class=\"btn secondary\" data-action=\"admin-unlock\">UNLOCK ▸</button>";
+      h += "</div>";
+      if (state.adminError) h += "<div class=\"label\" style=\"color:var(--red);margin-top:8px\">Incorrect passphrase.</div>";
+      h += "</div>";
+    }
+    h += "</div>";
+    return h;
+  }
+
+  /* ======================== EVENTS ======================== */
+  function attachEvents() {
+    var root = document.getElementById("root");
+
+    root.querySelectorAll("[data-action='tab']").forEach(function (el) {
+      el.addEventListener("click", function () { state.view = el.getAttribute("data-tab"); clearBanner(); render(); });
+    });
+
+    var nameSel = document.getElementById("f-name");
+    if (nameSel) {
+      nameSel.addEventListener("change", function () {
+        state.name = nameSel.value;
+        var e = entryFor(state.name);
+        if (e && e.answers) {
+          var a = {}; e.answers.forEach(function (v, i) { a[i] = v; });
+          state.answers = a; state.comfort = e.comfort; state.goals = e.goals;
+        } else if (e) {
+          // loaded from the live CSV, which doesn't retain per-question answers —
+          // show their prior comfort/goals but let them redo the diagnostic fresh
+          state.answers = {}; state.comfort = e.comfort; state.goals = e.goals;
+        } else {
+          state.answers = {}; state.comfort = null; state.goals = "";
+        }
+        state.exportText = null;
+        state.saved = false;
+        clearBanner();
+        render();
+      });
+    }
+
+    root.querySelectorAll("[data-action='answer']").forEach(function (el) {
+      el.addEventListener("change", function () {
+        state.answers[parseInt(el.getAttribute("data-qi"), 10)] = parseInt(el.getAttribute("data-oi"), 10);
+        render();
+      });
+    });
+
+    root.querySelectorAll("[data-action='comfort']").forEach(function (el) {
+      el.addEventListener("change", function () {
+        state.comfort = parseInt(el.getAttribute("data-val"), 10);
+        render();
+      });
+    });
+
+    var goalsEl = document.getElementById("f-goals");
+    if (goalsEl) {
+      goalsEl.addEventListener("input", function () { state.goals = goalsEl.value; });
+    }
+
+    root.querySelectorAll("[data-action='toggle']").forEach(function (el) {
+      el.addEventListener("click", function () {
+        var n = el.getAttribute("data-name");
+        state.expanded[n] = !state.expanded[n];
+        render();
+      });
+    });
+
+    var submitBtn = root.querySelector("[data-action='submit']");
+    if (submitBtn) submitBtn.addEventListener("click", onSubmit);
+
+    var copyEntryBtn = root.querySelector("[data-action='copy-entry']");
+    if (copyEntryBtn) copyEntryBtn.addEventListener("click", function () { copyToClipboard(state.exportText, "Entry copied — paste it into a message to the portal owner."); });
+
+    var exportBtn = root.querySelector("[data-action='export']");
+    if (exportBtn) exportBtn.addEventListener("click", function () {
+      state.csvText = toCsv(DATA);
+      render();
+    });
+
+    var copyCsvBtn = root.querySelector("[data-action='copy-csv']");
+    if (copyCsvBtn) copyCsvBtn.addEventListener("click", function () { copyToClipboard(state.csvText, "Table copied to clipboard."); });
+
+    var gateOpenBtn = root.querySelector("[data-action='admin-gate-open']");
+    if (gateOpenBtn) gateOpenBtn.addEventListener("click", function () {
+      state.adminGateOpen = true;
+      render();
+      var f = document.getElementById("f-admin");
+      if (f) f.focus();
+    });
+
+    var adminInputEl = document.getElementById("f-admin");
+    if (adminInputEl) {
+      adminInputEl.addEventListener("input", function () { state.adminInput = adminInputEl.value; });
+      adminInputEl.addEventListener("keydown", function (ev) { if (ev.key === "Enter") onAdminUnlock(); });
+    }
+
+    var unlockBtn = root.querySelector("[data-action='admin-unlock']");
+    if (unlockBtn) unlockBtn.addEventListener("click", onAdminUnlock);
+
+    var lockBtn = root.querySelector("[data-action='admin-lock']");
+    if (lockBtn) lockBtn.addEventListener("click", function () {
+      state.isAdmin = false;
+      state.adminInput = "";
+      state.adminGateOpen = false;
+      state.adminError = false;
+      render();
+    });
+  }
+
+  function onAdminUnlock() {
+    var attempt = state.adminInput || "";
+    sha256Hex(attempt).then(function (hex) {
+      if (hex === ADMIN_HASH) {
+        state.isAdmin = true;
+        state.adminInput = "";
+        state.adminError = false;
+      } else {
+        state.adminError = true;
+      }
+      render();
+    }).catch(function () {
+      state.adminError = true;
+      render();
+    });
+  }
+
+  /* ======================== SUBMIT / COPY-OUT ======================== */
+  function onSubmit() {
+    if (!state.name) { setBanner("warn", "Select your name first."); return; }
+    var allAnswered = QUESTIONS.every(function (_, i) { return state.answers[i] !== undefined; });
+    if (!allAnswered) { setBanner("warn", "Answer all 8 diagnostic questions."); return; }
+    if (state.comfort === null) { setBanner("warn", "Select your self-rated comfort level."); return; }
+    if (!state.goals || !state.goals.trim()) { setBanner("warn", "Tell us what you would like AI to help you with."); return; }
+
+    var ansArr = QUESTIONS.map(function (_, i) { return state.answers[i]; });
+    var score = scoreOf(state.answers);
+    var entry = {
+      name: state.name,
+      timestamp: new Date().toISOString(),
+      answers: ansArr,
+      score: score,
+      level: levelOf(score),
+      comfort: state.comfort,
+      goals: state.goals.trim()
+    };
+
+    state.busy = true;
+    state.saved = false;
+    state.exportText = null;
+    clearBanner();
+    render();
+
+    fetch(SYNC_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry)
+    }).then(function (res) {
+      if (!res.ok) throw new Error("sync failed: " + res.status);
+      return res.json();
+    }).then(function (result) {
+      if (!result || result.ok !== true) throw new Error("sync rejected");
+      // optimistically reflect it locally so the log tab updates without a reload
+      DATA = DATA.filter(function (e) { return e.name !== entry.name; });
+      DATA.push(entry);
+      DATA.sort(function (a, b) { return NAMES.indexOf(a.name) - NAMES.indexOf(b.name); });
+      state.busy = false;
+      state.saved = true;
+      render();
+    }).catch(function () {
+      // Couldn't reach or write via the sync worker — fall back to copy-out
+      // so the answers are never lost.
+      state.busy = false;
+      state.exportText = JSON.stringify(entry, null, 2);
+      render();
+      copyToClipboard(state.exportText, "Could not save automatically — copied to clipboard instead. Paste it into a message to the portal owner.");
+    });
+  }
+
+  /* Plain browser clipboard API — no Claude capability needed, so this artifact
+     can be shared publicly. Falls back to "select the text yourself" on failure
+     (sandboxed/older browsers may not grant clipboard-write). */
+  function copyToClipboard(text, successMsg) {
+    if (!text) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        setBanner("info", successMsg);
+      }).catch(function () {
+        setBanner("warn", "Could not auto-copy — select the text in the box above and copy it manually (Ctrl/Cmd+C).");
+      });
+    } else {
+      setBanner("warn", "Auto-copy isn't available here — select the text in the box above and copy it manually (Ctrl/Cmd+C).");
+    }
+  }
+
+  /* ======================== FULL TABLE EXPORT ======================== */
+  function toCsv(rows) {
+    var header = ["Name", "Timestamp", "Score", "Level", "Comfort", "Goals"];
+    var lines = [header.join(",")];
+    rows.forEach(function (e) {
+      var cells = [e.name, e.timestamp, e.score + "/8", e.level, e.comfort + "/5", e.goals];
+      lines.push(cells.map(function (c) {
+        var v = String(c == null ? "" : c).replace(/"/g, '""');
+        return "\"" + v + "\"";
+      }).join(","));
+    });
+    return lines.join("\n");
+  }
+
+  /* ======================== LOAD LIVE TABLE FROM GITHUB ======================== */
+  // Parses the raw repo CSV (as written by the sync worker: plain numeric
+  // Score/Comfort, no "/8" or "/5" suffix) back into entry objects.
+  function parseTableCsv(text) {
+    var rows = [];
+    var row = [], field = "", inQuotes = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; } else { inQuotes = false; }
+        } else field += c;
+      } else if (c === '"') {
+        inQuotes = true;
+      } else if (c === ",") {
+        row.push(field); field = "";
+      } else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[i + 1] === "\n") i++;
+        row.push(field); field = "";
+        if (row.length > 1 || row[0] !== "") rows.push(row);
+        row = [];
+      } else {
+        field += c;
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+
+    var dataRows = rows.slice(1); // drop header
+    var entries = [];
+    dataRows.forEach(function (r) {
+      var name = r[0];
+      if (!name || !r[1]) return; // skip blank/pending roster rows
+      entries.push({
+        name: name,
+        timestamp: r[1],
+        score: parseInt(r[2], 10),
+        level: r[3],
+        comfort: parseInt(r[4], 10),
+        goals: r[5] || ""
+      });
+    });
+    return entries;
+  }
+
+  function loadLiveTable() {
+    fetch(CSV_URL, { cache: "no-store" }).then(function (res) {
+      if (!res.ok) throw new Error("fetch failed");
+      return res.text();
+    }).then(function (text) {
+      var loaded = parseTableCsv(text);
+      if (loaded.length || DATA.length === 0) {
+        DATA = loaded;
+        render();
+      }
+    }).catch(function () {
+      /* offline or first load before the repo file exists — keep the
+         bundled snapshot already rendered, no user-facing error needed */
+    });
+  }
+
+  /* ======================== BOOT ======================== */
+  render();
+  loadLiveTable();
+})();
+</script>
