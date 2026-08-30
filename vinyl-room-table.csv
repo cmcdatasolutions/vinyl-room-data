@@ -1,12 +1,12 @@
-Name,Timestamp,Level,Rating,Understanding,AI vs Human,Primary Use,Can Replace Humans,Future Impact,Uses AI Daily,After Retirement,Goals
-Ian (MOKI),,,,,,,,,,,
-Dwight,,,,,,,,,,,
-Adrian,,,,,,,,,,,
-Yvette,,,,,,,,,,,
-Delly,,,,,,,,,,,
-Lee,,,,,,,,,,,
-Camille,,,,,,,,,,,
-Angella,,,,,,,,,,,
-Rockell,,,,,,,,,,,
-Rohan,,,,,,,,,,,
-Dave,,,,,,,,,,,
+"Name","Timestamp","Level","Rating","Understanding","AI vs Human","Primary Use","Can Replace Humans","Future Impact","Uses AI Daily","After Retirement","Goals"
+"Ian (MOKI)","","","","","","","","","","",""
+"Dwight","","","","","","","","","","",""
+"Adrian","","","","","","","","","","",""
+"Yvette","","","","","","","","","","",""
+"Delly","","","","","","","","","","",""
+"Lee","","","","","","","","","","",""
+"Camille","","","","","","","","","","",""
+"Angella","","","","","","","","","","",""
+"Rockell","2026-08-30T13:32:29.665Z","BEGINNER","1","A tool that can be used to automate routine processes.","AI means something that has to run on a program with built in specifications whilst human intelligence is learnt and developed from experiences","Making things easier, quicker , less down time","Not sure","Yes","No","Yes","Brain storm ideas"
+"Rohan","","","","","","","","","","",""
+"Dave","","","","","","","","","","",""
